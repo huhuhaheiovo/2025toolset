@@ -405,7 +405,7 @@ textarea.input-field {
 }
 
 .code-block::after {
-  content: "文本可能被截断，但复制会获取完整内容";
+  content: "Text may be truncated, but copying will get the complete content";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -466,7 +466,11 @@ textarea.input-field {
 /* 辅助类 */
 .text-center { text-align: center; }
 .text-vintage { color: var(--color-text-secondary); }
-.text-accent { color: var(--color-accent-primary); }
+.text-accent {
+  color: var(--color-accent-primary);
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.05);
+}
 .divider { height: 1px; background-color: var(--color-border); margin: 1rem 0; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
@@ -476,4 +480,38 @@ textarea.input-field {
   .container {
     padding: 1rem;
   }
+}
+
+/* 关键字突出显示 */
+strong, .font-bold {
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+/* 卡片标题关键字突出显示 */
+.title span.text-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.title span.text-accent::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent-primary);
+  opacity: 0.7;
+}
+
+/* 改进页面标题样式 */
+header h1.title {
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+}
+
+header p {
+  max-width: 520px;
+  margin: 0 auto;
 } 

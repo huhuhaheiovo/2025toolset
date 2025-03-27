@@ -43,27 +43,27 @@ export default function Page() {
 
   const convertToJson = useCallback(() => {
     if (!base64Input.trim()) {
-      setError("请先上传图片或输入Base64内容");
+      setError("Please upload an image or enter Base64 content first");
       return;
     }
 
     if (!jsonKey.trim()) {
-      setError("JSON键名不能为空");
+      setError("JSON key name cannot be empty");
       return;
     }
     
     setError("");
     try {
-      console.log("生成JSON，keepPrefix:", keepPrefix, "dataUrl存在:", !!dataUrl);
+      console.log("Generating JSON, keepPrefix:", keepPrefix, "dataUrl exists:", !!dataUrl);
       // 在用户手动点击转换按钮时，如果有完整的dataUrl并且用户选择保留前缀
       // 则使用完整的dataUrl，否则使用当前的base64Input
       let imageData = base64Input;
       
       if (keepPrefix && dataUrl && base64Input && !base64Input.startsWith('data:')) {
-        console.log("使用dataUrl作为数据源");
+        console.log("Using dataUrl as data source");
         imageData = dataUrl;
       } else if (!keepPrefix && base64Input.startsWith('data:')) {
-        console.log("移除前缀");
+        console.log("Removing prefix");
         imageData = base64Input.split(',')[1] || '';
       }
       
@@ -74,8 +74,8 @@ export default function Page() {
       const jsonResult = JSON.stringify(jsonObject, null, 2);
       setJsonOutput(jsonResult);
     } catch (err) {
-      setJsonOutput("转换出错，请检查输入");
-      console.error("JSON转换错误:", err);
+      setJsonOutput("Conversion error, please check input");
+      console.error("JSON conversion error:", err);
     }
   }, [base64Input, jsonKey, keepPrefix, dataUrl]);
 
@@ -88,12 +88,12 @@ export default function Page() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       })
-      .catch(err => console.error("复制失败:", err));
+      .catch(err => console.error("Copy failed:", err));
   };
 
   // 当"保留前缀"选项变化时更新base64Input
   const handleKeepPrefixChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("切换前缀选项", e.target.checked);
+    console.log("Switching prefix option", e.target.checked);
     const newKeepPrefix = e.target.checked;
     setKeepPrefix(newKeepPrefix);
     
@@ -110,7 +110,7 @@ export default function Page() {
 
   const processFile = useCallback((file: File) => {
     if (!file || !file.type.startsWith('image/')) {
-      setError("请上传有效的图片文件");
+      setError("Please upload a valid image file");
       return;
     }
 
@@ -123,19 +123,19 @@ export default function Page() {
       try {
         const result = event.target?.result as string;
         if (!result) {
-          throw new Error("读取图片失败");
+          throw new Error("Reading image failed");
         }
         
         // 存储完整的dataUrl，以便后续使用
         setDataUrl(result);
-        console.log("设置dataUrl:", result.substring(0, 50) + "...");
+        console.log("Setting dataUrl:", result.substring(0, 50) + "...");
         
         // 提取base64部分 (去掉前缀)
         const base64String = result.split(',')[1];
         
         // 根据keepPrefix选项决定是否保留前缀
         const finalBase64 = keepPrefix ? result : (base64String || "");
-        console.log("设置base64Input:", finalBase64.substring(0, 20) + "...", "keepPrefix:", keepPrefix);
+        console.log("Setting base64Input:", finalBase64.substring(0, 20) + "...", "keepPrefix:", keepPrefix);
         setBase64Input(finalBase64);
 
         // 在设置base64Input之后直接调用convertToJson
@@ -148,22 +148,22 @@ export default function Page() {
             const jsonResult = JSON.stringify(jsonObject, null, 2);
             setJsonOutput(jsonResult);
           } catch (err) {
-            console.error("生成JSON出错:", err);
+            console.error("Generating JSON error:", err);
           }
         }, 0);
         
       } catch (err) {
-        setError("处理图片时出错");
-        console.error("处理图片错误:", err);
+        setError("Error processing image");
+        console.error("Image processing error:", err);
       } finally {
         setIsLoading(false);
       }
     };
     
     reader.onerror = () => {
-      setError("读取文件失败");
+      setError("Reading file failed");
       setIsLoading(false);
-      console.error("FileReader错误");
+      console.error("FileReader error");
     };
     
     // 开始读取文件
@@ -171,7 +171,7 @@ export default function Page() {
   }, [keepPrefix, jsonKey]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("上传文件")
+    console.log("Uploading file")
     const file = e.target.files?.[0];
     if (file) {
       // 重置文件输入，确保同一文件可以再次选择
@@ -187,16 +187,28 @@ export default function Page() {
 
   return (
     <div className="min-h-screen vintage-bg">
+      <div className="bg-[var(--color-text-secondary)] text-white py-2 text-center text-sm">
+        <div className="container">
+          <p>The simplest way to convert <strong className="text-[var(--color-accent-primary)]">image files to JSON</strong> or <strong className="text-[var(--color-accent-primary)]">Base64 to JSON</strong></p>
+        </div>
+      </div>
       <div className="container">
         <header className="mb-10 flex flex-col items-center">
-          <h1 className="title text-4xl mb-2">BASE64 转换工具</h1>
+          <h1 className="title text-4xl mb-2">
+            <span className="text-accent">BASE64</span> to <span className="text-accent">JSON</span> Converter
+          </h1>
           <div className="title-underline"></div>
-          <p className="text-vintage text-center">上传图片、转换Base64、生成JSON</p>
+          <p className="text-vintage text-center text-lg">
+            Transform <span className="font-bold">image files</span> to <span className="font-bold">JSON</span> format with <span className="font-bold">Base64</span> encoding
+          </p>
+          <p className="text-sm mt-2 text-[var(--color-accent-secondary)]">
+            Simple, fast and secure online tool
+          </p>
         </header>
         
         <div className="grid md:grid-cols-12 gap-8 mb-8">
           <div className="card md:col-span-5">
-            <h2 className="title text-xl mb-4 pb-2 inline-block">输入</h2>
+            <h2 className="title text-xl mb-4 pb-2 inline-block">Input</h2>
             
             <div 
               ref={dropZoneRef}
@@ -215,7 +227,7 @@ export default function Page() {
               {isLoading ? (
                 <div className="flex-center py-4">
                   <div className="spinner"></div>
-                  <span className="ml-3 text-vintage font-medium">处理中...</span>
+                  <span className="ml-3 text-vintage font-medium">Processing...</span>
                 </div>
               ) : (
                 <>
@@ -224,7 +236,7 @@ export default function Page() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <p className="text-vintage font-medium mb-1 text-xs">点击上传图片</p>
+                  <p className="text-vintage font-medium mb-1 text-xs">Click to upload <span className="text-accent">image file</span></p>
                   {fileName && (
                     <div className="text-xs text-vintage truncate max-w-[120px]" title={fileName}>
                       {fileName}
@@ -250,14 +262,14 @@ export default function Page() {
                     <span className="toggle-slider"></span>
                   </div>
                   <span className="text-sm text-vintage ml-2">
-                    保留data:image/jpeg;base64前缀
+                    Keep data:image/jpeg;base64 prefix
                   </span>
                 </label>
               </div>
               
               <div className="flex flex-col">
                 <label htmlFor="jsonKey" className="input-label">
-                  JSON 键名:
+                  JSON Key Name:
                 </label>
                 <input
                   type="text"
@@ -265,14 +277,14 @@ export default function Page() {
                   value={jsonKey}
                   onChange={(e) => setJsonKey(e.target.value)}
                   className="input-field"
-                  placeholder="输入JSON键名"
+                  placeholder="Enter JSON key name"
                 />
               </div>
             </div>
             
             <div className="flex items-center my-4">
               <div className="flex-grow h-px bg-[var(--color-border)]"></div>
-              <span className="px-3 text-sm text-[var(--color-accent-secondary)]">或直接粘贴</span>
+              <span className="px-3 text-sm text-[var(--color-accent-secondary)]">or paste <strong>Base64</strong> directly</span>
               <div className="flex-grow h-px bg-[var(--color-border)]"></div>
             </div>
             
@@ -283,7 +295,7 @@ export default function Page() {
                 setBase64Input(e.target.value);
                 setError("");
               }}
-              placeholder="在此粘贴base64内容..."
+              placeholder="Paste base64 content here..."
             />
             
             <button
@@ -291,27 +303,27 @@ export default function Page() {
               onClick={convertToJson}
               disabled={isLoading}
             >
-              转换为 JSON
+              Convert to <span className="font-bold">JSON</span>
             </button>
           </div>
           
           <div className="card md:col-span-7">
             <div className="flex-between mb-4">
-              <h2 className="title text-xl pb-2 inline-block">JSON 结果</h2>
+              <h2 className="title text-xl pb-2 inline-block">JSON Result</h2>
               <div className="flex items-center">
-                <span className="text-xs text-vintage mr-2">可复制完整内容</span>
+                <span className="text-xs text-vintage mr-2">Complete content is copyable</span>
                 <button
                   className={`btn btn-round ${copied ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={copyToClipboard}
                 >
-                  {copied ? "已复制!" : "复制结果"}
+                  {copied ? "Copied!" : "Copy Result"}
                 </button>
               </div>
             </div>
             
             <div className="w-full" style={{ minHeight: '450px', position: 'relative' }}>
               <pre ref={preRef} className="code-block">
-                {jsonOutput || '等待生成JSON...'}
+                {jsonOutput || 'Waiting for JSON generation...'}
               </pre>
             </div>
           </div>
@@ -319,7 +331,8 @@ export default function Page() {
         
         <footer className="text-center text-[var(--color-accent-secondary)] text-sm mt-12">
           <div className="w-16 h-1 bg-[var(--color-accent-primary)] mx-auto mb-4"></div>
-          <p>Base64 JSON 在线转换工具 • 简单高效</p>
+          <p><span className="font-bold">Base64 to JSON</span> Online Converter • Simple & Efficient</p>
+          <p className="mt-2 text-xs">Convert <span className="text-accent">image files to JSON</span> with Base64 encoding</p>
         </footer>
       </div>
     </div>
